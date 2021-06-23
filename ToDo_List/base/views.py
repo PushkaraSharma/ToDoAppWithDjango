@@ -20,6 +20,14 @@ class CustomLoginView(LoginView):
 class TaskList(LoginRequiredMixin,ListView):
     model = Task 
     context_object_name = "tasks"
+ 
+    def get_context_data(self, **kwargs):
+        """here we want to modify the data so that only user can see his data, not all the tasks of every user"""
+        context = super().get_context_data(**kwargs)
+        context['tasks'] = context['tasks'].filter(user=self.request.user)
+        # getting the number of unfinsihed tasks
+        context['count'] = context['tasks'].filter(complete=False).count()
+        return context
 
 
 class TaskDetails(LoginRequiredMixin,DetailView):
@@ -28,7 +36,7 @@ class TaskDetails(LoginRequiredMixin,DetailView):
     template_name = 'base/task_details.html'   
 
 
-class TaskCreate(CreateView):
+class TaskCreate(LoginRequiredMixin,CreateView):
     """Create view will create fields automatically using the model task"""
     model = Task
     fields = '__all__'
@@ -36,13 +44,13 @@ class TaskCreate(CreateView):
     success_url = reverse_lazy('tasks')
 
 
-class TaskUpdate(UpdateView):
+class TaskUpdate(LoginRequiredMixin,UpdateView):
     model = Task
     fields = '__all__'
     success_url = reverse_lazy('tasks')
 
 
-class TaskDelete(DeleteView):
+class TaskDelete(LoginRequiredMixin,DeleteView):
     model = Task
     context_object_name = 'task'
     success_url = reverse_lazy('tasks')
