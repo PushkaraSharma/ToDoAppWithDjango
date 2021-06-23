@@ -10,6 +10,10 @@
 <h1>My TODO LIST</h1>
 <a href="{% url 'create-task' %}">Create Task</a>
 
+<form method="GET">
+    <input type="text" name="search_area" value="{{search_input}}">
+    <input type="submit" value="Search">
+</form>
 <table>
     <tr>
         <th>Item</th>

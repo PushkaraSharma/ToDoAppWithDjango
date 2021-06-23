@@ -25,7 +25,7 @@ class RegisterUser(FormView):
     def get(self, *args, **kwargs):
         if self.request.user.is_authenticated:
             return redirect('tasks')
-            
+
         return super(RegisterUser,self).get(*args, **kwargs)   
 
 
@@ -49,6 +49,14 @@ class TaskList(LoginRequiredMixin,ListView):
         context['tasks'] = context['tasks'].filter(user=self.request.user)
         # getting the number of unfinsihed tasks
         context['count'] = context['tasks'].filter(complete=False).count()
+
+        search_input = self.request.GET.get('search_area') or ''
+        
+        if search_input:
+            context['tasks'] = context['tasks'].filter(title__icontains = search_input)
+
+        context['search_input'] = search_input
+
         return context
 
 
